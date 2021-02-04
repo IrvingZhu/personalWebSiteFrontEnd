@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-26 17:24:46
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-04 21:52:23
+ * @LastEditTime: 2021-02-05 00:45:23
 -->
 <!-- 员工管理 -->
 <template>
@@ -40,12 +40,12 @@
                                 <el-button @click="drawer = true" type="text" size="mini">
                                     业务描述
                                 </el-button>
-                                <el-drawer title="个人业务信息" :visible.sync="drawer" :with-header="false">
+                                <el-drawer title="个人业务信息" :visible.sync="drawer" :with-header="false" append-to-body>
                                     <div style = "text-align: center; font-size: x-large; margin-top: 16px;">
-                                        <span>${btype}</span>
+                                        <span>{{btype}}</span>
                                     </div>
                                     <div style = "margin-top: 8px; font-size: large;">
-                                        <span>${binfo}</span>
+                                        <span>{{binfo}}</span>
                                     </div>    
                                 </el-drawer>
                             </el-table-column>
@@ -71,6 +71,11 @@
 
 <script>
     export default {
+        created(){
+            console.log("create this page");
+            this.getTableInfo();  
+        },
+
         name: 'organization-manage',
         data() {
             return {
@@ -83,17 +88,36 @@
                 showCount: 10,
                 totalResult: 10,
 
-                tableData: [{
-                    index: 1,
-                    bid: "1",
-                    btype: "开发合作",
-                }],
+                tableData: [],
                 drawer: false,
             };
         },
 
         methods: {
-            
+            async getTableInfo(){
+                console.log("enter getInfo");
+
+                const {data : res} = await this.$http.post("/api/searchBusi");
+
+                console.log(res);
+
+                var count = 0;
+                for(var i = 0; i < res.length; i++){
+                    console.log(res[i]);
+                    // var temp = '{"index" : "' + i.toString() + '"}';
+                    // console.log(temp);
+                    // res[i].push(JSON.parse(temp));
+                    res[i]['index'] = i + 1;
+                    this.tableData.push(res[i]);
+                    count++;
+                }
+
+                this.totalResult = count;
+            },
+
+            onShowDetailInfo(){
+
+            }
         }
     };
 </script>
