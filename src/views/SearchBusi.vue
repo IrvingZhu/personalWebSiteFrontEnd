@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-26 17:24:46
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-05 00:45:23
+ * @LastEditTime: 2021-02-06 02:17:59
 -->
 <!-- 员工管理 -->
 <template>
@@ -37,23 +37,46 @@
                             <el-table-column prop="bid" label="业务id" width="192px" align="left"></el-table-column>
                             <el-table-column prop="btype" label="业务类型" width="192px" align="left"></el-table-column>
                             <el-table-column prop="specific_detail" label="具体描述" align="left">
-                                <el-button @click="drawer = true" type="text" size="mini">
-                                    业务描述
-                                </el-button>
-                                <el-drawer title="个人业务信息" :visible.sync="drawer" :with-header="false" append-to-body>
-                                    <div style = "text-align: center; font-size: x-large; margin-top: 16px;">
-                                        <span>{{btype}}</span>
-                                    </div>
-                                    <div style = "margin-top: 8px; font-size: large;">
-                                        <span>{{binfo}}</span>
-                                    </div>    
-                                </el-drawer>
+                                <template slot-scope="scope">
+                                    <el-button @click="onShowDetailInfo(scope.row)" type="text" size="mini">
+                                        业务描述
+                                    </el-button>
+                                    <el-drawer title="个人业务信息" :visible.sync="drawer" :with-header="false"
+                                        append-to-body>
+                                        <div style="text-align: center; font-size: x-large; margin-top: 16px;">
+                                            <span>业务类型: {{btype}}</span>
+                                        </div>
+                                        <div style="margin-top: 8px; font-size: large;">
+                                            <span>业务具体信息: {{binfo}}</span>
+                                        </div>
+                                    </el-drawer>
+                                </template>
                             </el-table-column>
                             <el-table-column label="操作" align="center" width="256px" fixed="right">
                                 <template slot-scope="scope">
-                                    <el-button @click="toogleExpand(scope.row,'look')" type="text" size="mini">修改业务信息
+                                    <el-button @click="onModifyWrap(scope.row)" type="text" size="mini">修改业务信息
                                     </el-button>
-                                    <el-button @click="toogleExpand(scope.row,'look')" type="text" size="mini">删除业务信息
+
+                                    <el-dialog title="业务修改" :visible.sync="dialogFormVisible" append-to-body>
+                                        <el-form :model="form">
+                                            <el-form-item label="业务类型" :label-width="formLabelWidth">
+                                                <el-select v-model="value" placeholder="请选择">
+                                                    <el-option v-for="item in options" :key="item.value"
+                                                        :label="item.label" :value="item.value">
+                                                    </el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                            <el-form-item label="业务具体描述" :label-width="formLabelWidth">
+                                                <el-input type="textarea" v-model="formData.detail_descript" rows="5">
+                                                </el-input>
+                                            </el-form-item>
+                                        </el-form>
+                                        <div slot="footer" class="dialog-footer">
+                                            <el-button @click="onModifyCancel()">取 消</el-button>
+                                            <el-button type="primary" @click="onModifyBusiInfo()">修 改</el-button>
+                                        </div>
+                                    </el-dialog>
+                                    <el-button @click="onDeleteBusiInfoWrap(scope.row)" type="text" size="mini">删除业务信息
                                     </el-button>
                                 </template>
                             </el-table-column>
@@ -71,15 +94,19 @@
 
 <script>
     export default {
-        created(){
+        created() {
             console.log("create this page");
-            this.getTableInfo();  
+            this.getTableInfo();
         },
 
         name: 'organization-manage',
         data() {
             return {
                 cardTitle: '查询和操作',
+
+                dialogFormVisible: false,
+
+                value: "",
 
                 searchForm: {
                     name: '',
@@ -88,25 +115,48 @@
                 showCount: 10,
                 totalResult: 10,
 
+                options: [{
+                    value: '开发合作',
+                    label: '开发合作'
+                }, {
+                    value: '广告合作',
+                    label: '广告合作'
+                }, {
+                    value: '经营合作',
+                    label: '经营合作'
+                }, {
+                    value: '提点建议',
+                    label: '提点建议'
+                }, {
+                    value: '其它合作',
+                    label: '其它合作'
+                }],
+
+                formData: {
+                    detail_descript: '',
+                },
+
+                curBusiInfo: {
+                    bid: "",
+                },
+
                 tableData: [],
                 drawer: false,
             };
         },
 
         methods: {
-            async getTableInfo(){
+            async getTableInfo() {
                 console.log("enter getInfo");
 
-                const {data : res} = await this.$http.post("/api/searchBusi");
+                const { data: res } = await this.$http.post("/api/searchBusi");
 
                 console.log(res);
 
                 var count = 0;
-                for(var i = 0; i < res.length; i++){
+                for (var i = 0; i < res.length; i++) {
                     console.log(res[i]);
-                    // var temp = '{"index" : "' + i.toString() + '"}';
-                    // console.log(temp);
-                    // res[i].push(JSON.parse(temp));
+
                     res[i]['index'] = i + 1;
                     this.tableData.push(res[i]);
                     count++;
@@ -115,11 +165,101 @@
                 this.totalResult = count;
             },
 
-            onShowDetailInfo(){
+            async onShowDetailInfo(row) {
+                console.log("enter right side drawer");
 
+                console.log(row);
+
+                var row_bid = row["bid"];
+                console.log(row_bid);
+
+                const { data: res } = await this.$http.post("/api/busiDetail", { "bid": row_bid });
+
+                console.log(res);
+
+                this.btype = res["btype"];
+                this.binfo = res["binfo"];
+
+                console.log(this.btype);
+                console.log(this.binfo);
+
+                this.drawer = true;
+            },
+
+            onModifyCancel() {
+                this.value = "";
+                this.formData = "";
+                this.dialogFormVisible = false;
+            },
+
+            async onModifyWrap(row) {
+                this.curBusiInfo.bid = row["bid"];
+                this.dialogFormVisible = true;
+            },
+
+            async onModifyBusiInfo() {
+                console.log("enter modifyBusiInfo");
+
+                var row_bid = this.curBusiInfo.bid;
+                console.log(row_bid);
+
+                const { data: res } = await this.$http.post("/api/updateBusiInfo", { "bid": row_bid, "btype": this.value, "binfo": this.formData.detail_descript });
+
+                console.log(res);
+
+                if (res == "success") {
+                    this.$message({
+                        showClose: true,
+                        message: "修改成功",
+                        type: "success",
+                    });
+                    this.dialogFormVisible = false;
+                }
+                else {
+                    this.$message({
+                        showClose: false,
+                        message: "修改失败",
+                        type: "error",
+                    });
+                }
+            },
+
+            async onDeleteBusiInfoWrap(row) {
+                this.$confirm('此操作将永久删除该业务, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.post("/api/deleteBusiness", { "bid": row["bid"] }).then(function (res) {
+                        console.log(res);
+                        if (res["data"] == "success") {
+                            this.$message({
+                                showClose: true,
+                                message: "删除成功",
+                                type: "success",
+                            });
+                        }
+                        else {
+                            this.$message({
+                                showClose: false,
+                                message: "删除失败",
+                                type: "error",
+                            });
+                        }
+                    }, function (res) {
+                        this.$message({
+                            showClose: false,
+                            message: "删除失败",
+                            type: "error",
+                        });
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             }
         }
     };
 </script>
-
-<style scoped></style>

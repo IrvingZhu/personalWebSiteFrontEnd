@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-26 17:24:46
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-04 21:17:34
+ * @LastEditTime: 2021-02-06 02:20:23
 -->
 <!-- 组织管理 -->
 <template>
@@ -19,7 +19,7 @@
             <div class="card-div">
                 <p>{{ cardTitle }}</p>
                 <div class="card-content">
-                    <el-form :model="formData" :rules="rules" ref="formDataRef" label-width="150px"
+                    <el-form :model="formData" ref="formDataRef" label-width="150px"
                         class="demo-ruleForm" size="small">
                         <div style="text-align: center; margin:32px">
 
@@ -57,13 +57,6 @@
                 formData: {
                     detail_descript: '',
                     value: '',
-                },
-
-                rules: {
-                    name: [
-                        { required: true, message: '请输入活动名称', trigger: 'blur' },
-                        { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-                    ],
                 },
 
                 options: [{
