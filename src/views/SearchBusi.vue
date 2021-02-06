@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-26 17:24:46
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-06 02:17:59
+ * @LastEditTime: 2021-02-06 12:50:58
 -->
 <!-- 员工管理 -->
 <template>
@@ -22,7 +22,7 @@
                         <el-input v-model="searchForm.name" placeholder="查询业务"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="onSubmit" size="small">查询</el-button>
+                        <el-button type="primary" @click="onSearchInfoByKey()" size="small">查询</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -259,7 +259,26 @@
                         message: '已取消删除'
                     });
                 });
-            }
+            },
+
+            async onSearchInfoByKey() {
+                this.tableData = [];
+
+                const { data: res } = await this.$http.post("/api/searchBusiByKey", { "key": this.searchForm.name });
+
+                console.log(res);
+
+                var count = 0;
+                for (var i = 0; i < res.length; i++) {
+                    console.log(res[i]);
+
+                    res[i]['index'] = i + 1;
+                    this.tableData.push(res[i]);
+                    count++;
+                }
+
+                this.totalResult = count;
+            },
         }
     };
 </script>
