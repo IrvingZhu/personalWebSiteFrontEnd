@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 20:54:53
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-06 20:17:36
+ * @LastEditTime: 2021-02-06 20:25:44
 -->
 <template>
     <div class="login-wrap">
@@ -43,7 +43,8 @@
                         const { data: res } = await this.$http.post("/api/loginIn", {"username": this.formdata.username, "pwd": this.formdata.password});
                         console.log(res);         
                         if (res == "success") {
-                            this.$router.push({ path: '/home' })
+                            this.sessionStorage.setItem("uid", this.formdata.username);
+                            this.$router.push({ path: '/home' });
                             //  2.提示成功
                             this.$message({
                                 showClose: true,
