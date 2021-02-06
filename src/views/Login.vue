@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 20:54:53
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-03 23:42:00
+ * @LastEditTime: 2021-02-06 20:17:36
 -->
 <template>
     <div class="login-wrap">
@@ -58,9 +58,7 @@
                             });
                         }
                     })
-                        // (axios.defaults.baseURL + "loginIn", { username: formdata.username, pwd: formdata.password }, { emulateJSON: true }).then(function (res) {
 
-                        // })
                 } else {
                     this.$message({
                         showClose: true,

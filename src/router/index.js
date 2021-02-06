@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 17:56:08
  * @LastEditors: zrz
- * @LastEditTime: 2021-01-31 21:10:42
+ * @LastEditTime: 2021-02-06 20:05:34
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -33,23 +33,38 @@ const routes = [
     {
         path: '/home',
         name: 'Home',
+        meta: {
+            requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+        },
         component: Home,
         children: [
             {
                 path: '/userinfo',
                 name: '用户信息',
+                meta: {
+                    requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+                },
                 component: UserInfo,
             }, {
                 path: '/updateinfo',
                 name: '修改信息',
+                meta: {
+                    requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+                },
                 component: UpdateInfo,
             }, {
                 path: '/searchbusi',
                 name: '业务查询',
+                meta: {
+                    requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+                },
                 component: SearchBusi,
             }, {
                 path: '/busihandle',
                 name: '业务办理',
+                meta: {
+                    requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+                },
                 component: BusiHandle,
             },]
     },
