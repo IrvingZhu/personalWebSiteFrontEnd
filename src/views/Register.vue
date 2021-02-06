@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-31 20:46:00
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-03 14:44:17
+ * @LastEditTime: 2021-02-06 21:11:52
 -->
 <template>
     <div class="login-wrap">
@@ -50,7 +50,7 @@
                     this.$refs.registerRef.validate(async valid => {
                         if (!valid)
                             return;
-                        const { data: res } = await this.$http.post(this.$api + "registerIn", { "username": this.formdata.username, "pwd": this.formdata.password, "email": this.formdata.email });
+                        const { data: res } = await this.$http.post("/api/registerIn", { "username": this.formdata.username, "pwd": this.formdata.password, "email": this.formdata.email });
                         if (res == "success") {
                             this.$message({
                                 showClose: true,
