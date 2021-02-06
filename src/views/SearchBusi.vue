@@ -34,7 +34,7 @@
                             <el-table-column type="index" :index="indexMethod" width="192px" align="center"
                                 fixed="left">
                             </el-table-column>
-                            <el-table-column prop="bid" label="业务id" width="192px" align="left"></el-table-column>
+                            <el-table-column prop="bid" label="业务id" width="128px" align="left"></el-table-column>
                             <el-table-column prop="btype" label="业务类型" width="192px" align="left"></el-table-column>
                             <el-table-column prop="specific_detail" label="具体描述" align="left">
                                 <template slot-scope="scope">
@@ -52,7 +52,7 @@
                                     </el-drawer>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="操作" align="center" width="256px" fixed="right">
+                            <el-table-column label="操作" align="center" width="192px" fixed="right">
                                 <template slot-scope="scope">
                                     <el-button @click="onModifyWrap(scope.row)" type="text" size="mini">修改业务信息
                                     </el-button>

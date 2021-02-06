@@ -14,7 +14,7 @@
                 <el-button type="text" style="text-align: top;" @click = "exitLogin()">退出</el-button></div>
         </el-header>
         <el-container>
-            <el-aside class="aside">
+            <el-aside class="aside" width = "192px">
                 <!-- 侧边栏导航  -->
                 <!-- unique-opened只展开一个 -->
                 <!-- router开启路由模式 -->

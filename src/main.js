@@ -29,6 +29,7 @@ Vue.prototype.$api = baseUrl.comurl
 
 Vue.prototype.$axios = axios
 /* eslint-disable no-new */
+
 new Vue({
     el: '#app',
     router,
