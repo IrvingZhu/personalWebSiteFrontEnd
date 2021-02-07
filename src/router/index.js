@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 17:56:08
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-06 20:05:34
+ * @LastEditTime: 2021-02-07 12:43:55
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -23,6 +23,9 @@ const routes = [
     {
         path: '/',
         name: 'Login',
+        // meta: {
+        //     requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+        // },
         component: Login
     },
     {

@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-31 20:46:00
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-06 21:11:52
+ * @LastEditTime: 2021-02-07 12:32:45
 -->
 <template>
     <div class="login-wrap">
@@ -20,8 +20,9 @@
                 <el-input v-model="formdata.password" show-password></el-input>
             </el-form-item>
             <el-button class="btn" type="primary" @click="handleRegister()">注册</el-button>
-            <div></div>
-            <el-button class="btn" type="primary" @click="handleReturn()">返回</el-button>
+            <br>
+            <br>
+            <el-button class="btn" @click="handleReturn()">返回</el-button>
         </el-form>
     </div>
 </template>

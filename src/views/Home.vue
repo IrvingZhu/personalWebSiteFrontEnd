@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 21:24:49
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-06 20:51:09
+ * @LastEditTime: 2021-02-07 12:41:23
 -->
 <template>
     <el-container class="container">
@@ -102,7 +102,7 @@
                 const {data: res} = await this.$http.post("/api/exit");
 
                 if(res == "success"){
-                    localStorage.removeItem("uid");
+                    sessionStorage.removeItem("uid");
                     this.$message({
                         showClose:true,
                         message: "退出成功",

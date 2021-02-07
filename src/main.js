@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 17:56:08
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-06 20:39:02
+ * @LastEditTime: 2021-02-07 14:36:50
  */
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
@@ -30,20 +30,25 @@ Vue.prototype.$api = baseUrl.comurl
 Vue.prototype.$axios = axios
 /* eslint-disable no-new */
 
-router.beforeEach((to, from, next)=>{
-    if(to.meta.requireAuth){
-        if(localStorage.getItem("uid")){
-            next();
-        }else{
-            if(to.path == '/'){
-                next();
-            }else{
-                next({
-                    path: "/"
-                })
-            }
+router.beforeEach((to, from, next) => {
+    if(to.path == '/'){
+        if(sessionStorage.getItem("uid")){
+            next({
+                path:"/home"
+            })
         }
-    }else{
+    }
+    
+
+    if (to.meta.requireAuth) {
+        if (sessionStorage.getItem("uid")) {
+            next();
+        } else {
+            next({
+                path: "/"
+            })
+        }
+    } else {
         next();
     }
 })

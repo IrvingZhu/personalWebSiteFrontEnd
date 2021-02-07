@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 20:54:53
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-06 20:48:45
+ * @LastEditTime: 2021-02-07 12:38:56
 -->
 <template>
     <div class="login-wrap">
@@ -17,8 +17,14 @@
                 <el-input v-model="formdata.password" show-password></el-input>
             </el-form-item>
             <el-button class="login-btn" type="primary" @click="handleLogin()">登录</el-button>
-            <div></div>
-            <el-button class="login-btn" type="primary" @click="handleRegisterPage()">注册</el-button>
+            <br>
+            <br>
+            <el-button class="login-btn" @click="handleRegisterPage()">注册</el-button>
+            <br>
+            <br>
+            <div>
+                <a href = "http://localhost:8088">返回首页</a>
+            </div>
         </el-form>
     </div>
 </template>
@@ -43,7 +49,7 @@
                         const { data: res } = await this.$http.post("/api/loginIn", {"username": this.formdata.username, "pwd": this.formdata.password});
                         console.log(res);         
                         if (res == "success") {
-                            localStorage.setItem("uid", this.formdata.username);
+                            sessionStorage.setItem("uid", this.formdata.username);
                             this.$router.push({ path: '/home' });
                             //  2.提示成功
                             this.$message({
