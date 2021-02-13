@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 20:54:53
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-07 12:38:56
+ * @LastEditTime: 2021-02-13 22:21:00
 -->
 <template>
     <div class="login-wrap">
@@ -46,11 +46,21 @@
                     console.log("enter handleLogin")
                     this.$refs.loginRef.validate(async valid => {
                         if (!valid) return;
+
+                        var isAdmin = this.formdata.username;
+
                         const { data: res } = await this.$http.post("/api/loginIn", {"username": this.formdata.username, "pwd": this.formdata.password});
                         console.log(res);         
                         if (res == "success") {
-                            sessionStorage.setItem("uid", this.formdata.username);
-                            this.$router.push({ path: '/home' });
+                            if(isAdmin == "admin"){
+                                sessionStorage.setItem("uid", "admin");
+                                this.$router.push({path: '/managepage'});
+                            } 
+                            else{
+                                sessionStorage.setItem("uid", this.formdata.username);
+                                this.$router.push({ path: '/home' });
+                            }
+
                             //  2.提示成功
                             this.$message({
                                 showClose: true,

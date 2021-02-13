@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-28 17:56:08
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-07 12:43:55
+ * @LastEditTime: 2021-02-13 22:24:25
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -16,6 +16,7 @@ const UpdateInfo = () => import('../views/UpdateInfo.vue')
 const SearchBusi = () => import('../views/SearchBusi.vue')
 const BusiHandle = () => import('../views/BusiHandle.vue')
 const Register = () => import('../views/Register.vue')
+const ManagePage = () => import('../components/PersonalManage.vue')
 
 Vue.use(VueRouter)
 
@@ -23,15 +24,20 @@ const routes = [
     {
         path: '/',
         name: 'Login',
-        // meta: {
-        //     requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-        // },
         component: Login
     },
     {
         path: '/register',
         name: '注册',
         component: Register
+    },
+    {
+        path: '/managepage',
+        name: '管理界面',
+        meta: {
+            requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+        },
+        component: ManagePage
     },
     {
         path: '/home',
