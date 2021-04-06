@@ -6,7 +6,7 @@
  * @LastEditors: zrz
  * @LastEditTime: 2021-02-06 12:50:58
 -->
-<!-- 员工管理 -->
+
 <template>
     <div class="container-body organization-manage">
         <div class="breadcrumb-div">
@@ -146,14 +146,18 @@
         },
 
         methods: {
+            async getTotalResult(){
+                const { data: res } = await this.$http.get("/api/getTotalResult");
+                this.totalResult = res;
+            },
+
             async getTableInfo() {
                 console.log("enter getInfo");
 
-                const { data: res } = await this.$http.post("/api/searchBusi");
+                const { data: res } = await this.$http.get("/api/searchBusi?begin=" + (currentPage - 1) * showCount + "&num=" + showCount);
 
                 console.log(res);
 
-                var count = 0;
                 for (var i = 0; i < res.length; i++) {
                     console.log(res[i]);
 
@@ -161,8 +165,27 @@
                     this.tableData.push(res[i]);
                     count++;
                 }
+            },
 
-                this.totalResult = count;
+            async handleCurrentChange(val){
+                this.currentPage = val;
+
+                const { data: res } = await this.$http.get("/api/searchBusi?begin=" + (currentPage - 1) * showCount + "&num=" + showCount);
+
+                console.log(res);
+
+                for (var i = 0; i < res.length; i++) {
+                    console.log(res[i]);
+
+                    res[i]['index'] = i + 1;
+                    this.tableData.push(res[i]);
+                }
+            },
+
+            async handleSizeChange(val){
+                this.showCount = val;
+                this.currentPage = 1;
+                this.getTableInfo();
             },
 
             async onShowDetailInfo(row) {
