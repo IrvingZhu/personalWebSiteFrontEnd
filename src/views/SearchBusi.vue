@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-26 17:24:46
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-06 12:50:58
+ * @LastEditTime: 2021-04-06 22:57:55
 -->
 
 <template>
@@ -96,6 +96,7 @@
     export default {
         created() {
             console.log("create this page");
+            this.getTotalResult();
             this.getTableInfo();
         },
 
@@ -111,6 +112,7 @@
                 searchForm: {
                     name: '',
                 },
+                
                 currentPage: 1,
                 showCount: 10,
                 totalResult: 10,
@@ -153,8 +155,9 @@
 
             async getTableInfo() {
                 console.log("enter getInfo");
+                this.tableData = [];
 
-                const { data: res } = await this.$http.get("/api/searchBusi?begin=" + (currentPage - 1) * showCount + "&num=" + showCount);
+                const { data: res } = await this.$http.get("/api/searchBusi?begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
 
                 console.log(res);
 
@@ -163,14 +166,17 @@
 
                     res[i]['index'] = i + 1;
                     this.tableData.push(res[i]);
-                    count++;
                 }
             },
 
             async handleCurrentChange(val){
+                console.log("handle current table page change");
+
+                this.tableData = [];
+
                 this.currentPage = val;
 
-                const { data: res } = await this.$http.get("/api/searchBusi?begin=" + (currentPage - 1) * showCount + "&num=" + showCount);
+                const { data: res } = await this.$http.get("/api/searchBusi?begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
 
                 console.log(res);
 
@@ -196,7 +202,7 @@
                 var row_bid = row["bid"];
                 console.log(row_bid);
 
-                const { data: res } = await this.$http.post("/api/busiDetail", { "bid": row_bid });
+                const { data: res } = await this.$http.get("/api/busiDetail?bid=" + row_bid );
 
                 console.log(res);
 
@@ -287,7 +293,12 @@
             async onSearchInfoByKey() {
                 this.tableData = [];
 
-                const { data: res } = await this.$http.post("/api/searchBusiByKey", { "key": this.searchForm.name });
+                if(this.searchForm.name == ""){
+                    this.getTableInfo();
+                    return;
+                }
+
+                const { data: res } = await this.$http.get("/api/searchBusiByKey?key=" + this.searchForm.name);
 
                 console.log(res);
 

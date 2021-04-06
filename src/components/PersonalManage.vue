@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-02-07 15:01:38
  * @LastEditors: zrz
- * @LastEditTime: 2021-02-13 22:35:57
+ * @LastEditTime: 2021-04-06 22:53:46
 -->
 <template>
     <div class="container-body organization-manage">
@@ -98,6 +98,7 @@
     export default {
         created() {
             console.log("create this page");
+            this.getTotalResult();
             this.getTableInfo();
         },
 
@@ -148,10 +149,15 @@
         },
 
         methods: {
+            async getTotalResult(){
+                const { data: res } = await this.$http.get("/api/manageSearchTotal");
+                this.totalResult = res;
+            },
+
             async exitLogin(){
                 console.log("exit login");
 
-                const {data: res} = await this.$http.post("/api/exit");
+                const { data: res } = await this.$http.post("/api/exit");
 
                 if(res == "success"){
                     sessionStorage.removeItem("uid");
@@ -172,22 +178,46 @@
             },
 
             async getTableInfo() {
+                this.tableData = [];
+
                 console.log("enter getInfo");
 
-                const { data: res } = await this.$http.post("/api/manageSearchAll");
+                const { data: res } = await this.$http.get("/api/manageSearchAll?begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
 
                 console.log(res);
 
-                var count = 0;
                 for (var i = 0; i < res.length; i++) {
                     console.log(res[i]);
 
                     res[i]['index'] = i + 1;
                     this.tableData.push(res[i]);
-                    count++;
                 }
 
-                this.totalResult = count;
+            },
+
+            async handleCurrentChange(val){
+                console.log("handle current table page change");
+
+                this.tableData = [];
+
+                this.currentPage = val;
+
+                const { data: res } = await this.$http.get("/api/manageSearchAll?begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
+
+                console.log(res);
+
+                for (var i = 0; i < res.length; i++) {
+                    console.log(res[i]);
+
+                    res[i]['index'] = i + 1;
+                    this.tableData.push(res[i]);
+                }
+            },
+
+            async handleSizeChange(val){
+                this.showCount = val;
+                this.currentPage = 1;
+                this.getTableInfo();
             },
 
             async onShowDetailInfo(row) {
@@ -198,7 +228,7 @@
                 var row_bid = row["bid"];
                 console.log(row_bid);
 
-                const { data: res } = await this.$http.post("/api/busiDetail", { "bid": row_bid });
+                const { data: res } = await this.$http.get("/api/busiDetail?bid=" + row_bid);
 
                 console.log(res);
 
@@ -289,20 +319,16 @@
             async onSearchInfoByKey() {
                 this.tableData = [];
 
-                const { data: res } = await this.$http.post("/api/manageSearchByKey", { "key": this.searchForm.name });
+                const { data: res } = await this.$http.get("/api/manageSearchByKey?key=" + this.searchForm.name);
 
                 console.log(res);
 
-                var count = 0;
                 for (var i = 0; i < res.length; i++) {
                     console.log(res[i]);
 
                     res[i]['index'] = i + 1;
                     this.tableData.push(res[i]);
-                    count++;
                 }
-
-                this.totalResult = count;
             },
         }
     };
