@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-01-26 17:24:46
  * @LastEditors: zrz
- * @LastEditTime: 2021-04-06 22:57:55
+ * @LastEditTime: 2021-04-07 21:13:40
 -->
 
 <template>
@@ -96,7 +96,6 @@
     export default {
         created() {
             console.log("create this page");
-            this.getTotalResult();
             this.getTableInfo();
         },
 
@@ -116,6 +115,10 @@
                 currentPage: 1,
                 showCount: 10,
                 totalResult: 10,
+                // status, that is all condition search or key condition search
+                // 0 is all,
+                // 1 is key.
+                flag: 0,
 
                 options: [{
                     value: '开发合作',
@@ -161,10 +164,12 @@
 
                 console.log(res);
 
+                this.getTotalResult();
+
                 for (var i = 0; i < res.length; i++) {
                     console.log(res[i]);
 
-                    res[i]['index'] = i + 1;
+                    res[i]['index'] = (this.currentPage - 1) * this.showCount + i + 1;
                     this.tableData.push(res[i]);
                 }
             },
@@ -175,6 +180,11 @@
                 this.tableData = [];
 
                 this.currentPage = val;
+
+                if(this.flag == 1){
+                    this.onSearchInfoByKey();
+                    return;
+                }
 
                 const { data: res } = await this.$http.get("/api/searchBusi?begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
 
@@ -191,6 +201,11 @@
             async handleSizeChange(val){
                 this.showCount = val;
                 this.currentPage = 1;
+                if(this.flag == 1){
+                    this.onSearchInfoByKey();
+                    return;
+                }
+
                 this.getTableInfo();
             },
 
@@ -290,28 +305,32 @@
                 });
             },
 
+            async searchBusiKeyNum(){
+                const {data : res} = await this.$http.get("/api/searchBusiKeyNum?key=" + this.searchForm.name);
+                this.totalResult = res;  
+            },
+
             async onSearchInfoByKey() {
+                this.flag = 1;
                 this.tableData = [];
 
                 if(this.searchForm.name == ""){
+                    this.flag = 0;
                     this.getTableInfo();
                     return;
                 }
 
-                const { data: res } = await this.$http.get("/api/searchBusiByKey?key=" + this.searchForm.name);
+                const { data: res } = await this.$http.get("/api/searchBusiByKey?key=" + this.searchForm.name + "&begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
+                this.searchBusiKeyNum();
 
                 console.log(res);
 
-                var count = 0;
                 for (var i = 0; i < res.length; i++) {
                     console.log(res[i]);
 
-                    res[i]['index'] = i + 1;
+                    res[i]['index'] = (this.currentPage - 1) * this.showCount + i + 1;
                     this.tableData.push(res[i]);
-                    count++;
                 }
-
-                this.totalResult = count;
             },
         }
     };

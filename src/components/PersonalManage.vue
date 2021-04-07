@@ -4,7 +4,7 @@
  * @Author: zrz
  * @Date: 2021-02-07 15:01:38
  * @LastEditors: zrz
- * @LastEditTime: 2021-04-06 22:53:46
+ * @LastEditTime: 2021-04-07 22:24:18
 -->
 <template>
     <div class="container-body organization-manage">
@@ -98,7 +98,6 @@
     export default {
         created() {
             console.log("create this page");
-            this.getTotalResult();
             this.getTableInfo();
         },
 
@@ -117,6 +116,8 @@
                 currentPage: 1,
                 showCount: 10,
                 totalResult: 10,
+                // flag, the function is same to searchBusi model
+                flag: 0,
 
                 options: [{
                     value: '开发合作',
@@ -152,6 +153,7 @@
             async getTotalResult(){
                 const { data: res } = await this.$http.get("/api/manageSearchTotal");
                 this.totalResult = res;
+                console.log("--------------------------" + this.totalResult);
             },
 
             async exitLogin(){
@@ -183,6 +185,7 @@
                 console.log("enter getInfo");
 
                 const { data: res } = await this.$http.get("/api/manageSearchAll?begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
+                this.getTotalResult();
 
                 console.log(res);
 
@@ -192,7 +195,6 @@
                     res[i]['index'] = i + 1;
                     this.tableData.push(res[i]);
                 }
-
             },
 
             async handleCurrentChange(val){
@@ -201,6 +203,11 @@
                 this.tableData = [];
 
                 this.currentPage = val;
+
+                if(this.flag == 1){
+                    this.onSearchInfoByKey();
+                    return;
+                }
 
                 const { data: res } = await this.$http.get("/api/manageSearchAll?begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
 
@@ -217,6 +224,12 @@
             async handleSizeChange(val){
                 this.showCount = val;
                 this.currentPage = 1;
+                
+                if(this.flag == 1){
+                    this.onSearchInfoByKey();
+                    return;
+                }
+
                 this.getTableInfo();
             },
 
@@ -316,10 +329,23 @@
                 });
             },
 
+            async searchTotalKeyNum(){
+                const {data : res} = await this.$http.get("/api/manageSearchTotalKeyNum?key=" + this.searchForm.name);
+                this.totalResult = res;                  
+            },
+
             async onSearchInfoByKey() {
+                this.flag = 1;
                 this.tableData = [];
 
+                if(this.searchForm.name == ""){
+                    this.flag = 0;
+                    this.getTableInfo();
+                    return;
+                }
+
                 const { data: res } = await this.$http.get("/api/manageSearchByKey?key=" + this.searchForm.name);
+                this.searchTotalKeyNum();
 
                 console.log(res);
 
