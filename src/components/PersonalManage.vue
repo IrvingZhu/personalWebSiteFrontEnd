@@ -4,13 +4,13 @@
  * @Author: zrz
  * @Date: 2021-02-07 15:01:38
  * @LastEditors: zrz
- * @LastEditTime: 2021-04-07 22:24:18
+ * @LastEditTime: 2021-04-08 11:42:10
 -->
 <template>
     <div class="container-body organization-manage">
         <div class="breadcrumb-div">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item>管理系统</el-breadcrumb-item>
+                <el-breadcrumb-item size = "xx-large">个人网站后台管理系统</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div>
@@ -26,13 +26,41 @@
                         <el-button type="primary" @click="onSearchInfoByKey()" size="small">查询</el-button>
                     </el-form-item>
                 </el-form>
+
+                <template>
+                    <el-button @click="onAddBusiness()" type="text" size="xx-large">增添业务
+                    </el-button>
+                    <el-dialog title="业务添加" :visible.sync="addBusinessShow" append-to-body>
+                        <el-form :model="form">
+                            <el-form-item label="用户名" :label-width="formLabelWidth">
+                                <el-input v-model="addBusinessUser" placeholder="用户名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="业务类型" :label-width="formLabelWidth">
+                                <el-select v-model="addBusiValue" placeholder="请选择">
+                                    <el-option v-for="item in options" :key="item.value"
+                                        :label="item.label" :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="业务具体描述" :label-width="formLabelWidth">
+                                <el-input type="textarea" v-model="addBusiInfo" rows="5">
+                                </el-input>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="onAddCancel()">取 消</el-button>
+                            <el-button type="primary" @click="onaddBusiInfo()">增 加</el-button>
+                        </div>
+                    </el-dialog>
+                </template>
+                
             </div>
             <div class="page-container-body">
                 <div class="card-div">
                     <p>{{ cardTitle }}</p>
                     <div class="card-content">
                         <el-table :data="tableData" stripe style="width: 100%" size="small">
-                            <el-table-column type="index" :index="indexMethod" width="96px" align="center"
+                            <el-table-column type="index" :index="index" width="96px" align="center"
                                 fixed="left">
                             </el-table-column>
                             <el-table-column prop="uname" label="用户名" width="96px" align="left"></el-table-column>
@@ -106,9 +134,16 @@
             return {
                 cardTitle: '查询和操作',
 
+                // add model data
+                addBusinessUser: "",
+                addBusiValue: "",
+                addBusiInfo: "",
+
                 dialogFormVisible: false,
+                addBusinessShow: false,
 
                 value: "",
+
 
                 searchForm: {
                     name: '',
@@ -179,6 +214,35 @@
                 }
             },
 
+            async onAddBusiness(){
+                this.addBusinessShow = true;
+            },
+
+            async onAddCancel(){
+                this.addBusinessShow = false;
+            },
+
+            async onaddBusiInfo(){
+                const{data : res} = await this.$http.post("/api/manageAdd", {"uname": this.addBusinessUser, "btype": this.addBusiValue, "binfo": this.addBusiInfo});
+                console.log(res);
+
+                if (res == "success") {
+                    this.$message({
+                        showClose: true,
+                        message: "增加业务成功",
+                        type: "success",
+                    });
+                    this.addBusinessShow = false;
+                }
+                else {
+                    this.$message({
+                        showClose: false,
+                        message: "增加业务失败",
+                        type: "error",
+                    });
+                }
+            },
+
             async getTableInfo() {
                 this.tableData = [];
 
@@ -192,7 +256,7 @@
                 for (var i = 0; i < res.length; i++) {
                     console.log(res[i]);
 
-                    res[i]['index'] = i + 1;
+                    res[i]['index'] = (this.currentPage - 1) * this.showCount + i + 1;
                     this.tableData.push(res[i]);
                 }
             },
@@ -216,7 +280,7 @@
                 for (var i = 0; i < res.length; i++) {
                     console.log(res[i]);
 
-                    res[i]['index'] = i + 1;
+                    res[i]['index'] = (this.currentPage - 1) * this.showCount + i + 1;
                     this.tableData.push(res[i]);
                 }
             },
@@ -344,7 +408,7 @@
                     return;
                 }
 
-                const { data: res } = await this.$http.get("/api/manageSearchByKey?key=" + this.searchForm.name);
+                const { data: res } = await this.$http.get("/api/manageSearchByKey?key=" + this.searchForm.name + "&begin=" + (this.currentPage - 1) * this.showCount + "&num=" + this.showCount);
                 this.searchTotalKeyNum();
 
                 console.log(res);
